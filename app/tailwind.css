@@ -4,21 +4,21 @@
 
 @font-face {
   font-family: "Ubuntu-Bold";
-  src: url("app/assets/fonts/Ubuntu-Bold.ttf") format("truetype");
+  src: url("../app/assets/fonts/Ubuntu-Bold.ttf") format("truetype");
   font-weight: bolder;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Ubuntu-Medium";
-  src: url("app/assets/fonts/Ubuntu-Medium.ttf") format("truetype");
+  src: url("../app/assets/fonts/Ubuntu-Medium.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Ubuntu-Regular";
-  src: url("app/assets/fonts/Ubuntu-Regular.ttf") format("truetype");
+  src: url("../app/assets/fonts/Ubuntu-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }

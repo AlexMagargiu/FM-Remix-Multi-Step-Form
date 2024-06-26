@@ -1,3 +1,4 @@
+import { join } from "path";
 import type { Config } from "tailwindcss";
 
 export default {
@@ -10,8 +11,8 @@ export default {
         "ubuntu-regular": ["Ubuntu-Regular", "sans-serif"],
       },
       backgroundImage: {
-        desktop: "url('app/assets/images/bg-sidebar-desktop.svg')",
-        mobile: "url('app/assets/images/bg-sidebar-mobile.svg')",
+        desktop: "url('../app/assets/images/bg-sidebar-desktop.svg')",
+        mobile: "url('../app/assets/images/bg-sidebar-mobile.svg')",
       },
       colors: {
         primary: {
