@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Form, redirect, useActionData } from "@remix-run/react";
 import FormInput from "~/components/FormInput";
+import PageNavigation from "~/components/PageNavigation";
 
 export const meta: MetaFunction = () => {
   return [
@@ -62,14 +63,14 @@ export default function InfoPage() {
               error={formResponse?.error}
             />
           </div>
-          <button className="mt-4 hidden rounded-md bg-primary-marineBlue px-4 py-2 font-ubuntu-bold text-sm text-primary-lightBlue lg:block lg:self-end">
-            Next Step
-          </button>
+          <div className="hidden lg:flex">
+            <PageNavigation />
+          </div>
         </div>
       </Form>
-      <button className="mb-4 self-end rounded-md bg-primary-marineBlue px-4 py-2 font-ubuntu-bold text-sm text-primary-lightBlue lg:hidden lg:self-end">
-        Next Step
-      </button>
+      <div className="flex w-full items-center justify-center lg:hidden">
+        <PageNavigation />
+      </div>
     </div>
   );
 }
