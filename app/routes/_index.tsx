@@ -1,7 +1,9 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Form, redirect, useActionData } from "@remix-run/react";
 import FormInput from "~/components/FormInput";
 import PageNavigation from "~/components/PageNavigation";
+import { connectToDatabase, ObjectId } from "~/utils/mongodb.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -17,27 +19,37 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const phoneNumber = formData.get("phone-number");
 
   if (!name || !email || !phoneNumber) {
-    return { error: "Please fill in all fields" };
+    return json({ error: "Please fill in all fields" }, { status: 400 });
   }
 
-  console.log({ name, email, phoneNumber });
-  return redirect("/plan/");
+  const db = await connectToDatabase();
+  const id = new ObjectId();
+
+  await db.collection("formEntries").insertOne({
+    _id: id,
+    name,
+    email,
+    phoneNumber,
+    createdAt: new Date(),
+  });
+
+  return redirect(`/plan/?id=${id.toHexString()}`);
 };
 
 export default function InfoPage() {
   const formResponse = useActionData<typeof action>();
 
   return (
-    <div className="flex h-full w-[90%] flex-col items-center justify-between gap-12 text-primary-marineBlue lg:h-full lg:w-max lg:items-start">
+    <div className="flex h-full w-[90%] flex-col items-center justify-between gap-12 text-primary-marineBlue lg:h-full lg:w-8/12 lg:items-start">
       <Form
-        className="flex w-full max-w-2xl flex-col gap-4 rounded-lg bg-neutral-alabaster px-4 py-6 shadow-xl lg:flex lg:h-full lg:max-w-xl lg:flex-col lg:items-start lg:justify-between lg:bg-white lg:px-0 lg:py-4 lg:shadow-none"
+        className="flex w-full flex-col gap-4 rounded-lg bg-neutral-alabaster px-4 py-6 shadow-xl lg:flex lg:h-full lg:w-full lg:flex-col lg:items-start lg:justify-between lg:bg-white lg:px-0 lg:py-4 lg:shadow-none"
         method="post"
       >
-        <div className="flex flex-col lg:h-full lg:justify-between">
-          <div className="flex flex-col gap-4 lg:h-full">
+        <div className="flex flex-col lg:h-full lg:w-full lg:justify-between">
+          <div className="flex flex-col gap-4 lg:h-full lg:w-full">
             <div className="lg:mt-8">
               <h1 className="font-ubuntu-bold text-2xl">Personal info</h1>
-              <p className="max-w-60 text-neutral-coolGray lg:max-w-full">
+              <p className="max-w-60 text-sm text-neutral-coolGray lg:max-w-full">
                 Please provide your name, email address, and phone number.
               </p>
             </div>

@@ -14,7 +14,7 @@ const PlanSelector = ({
   planPriceYearly,
 }: PlanSelectorProps) => {
   return (
-    <div className="relative">
+    <div className="relative w-full flex-grow lg:w-auto">
       <input
         type="radio"
         id={planType}
@@ -24,7 +24,7 @@ const PlanSelector = ({
       />
       <label
         htmlFor={planType}
-        className="flex cursor-pointer items-center gap-4 rounded-lg border border-neutral-lightGray px-4 py-2 text-primary-marineBlue peer-checked:border-primary-purplishBlue peer-checked:bg-neutral-magnolia lg:w-32 lg:flex-col lg:items-start lg:gap-10 lg:py-4"
+        className="flex cursor-pointer items-center gap-4 rounded-lg border border-neutral-lightGray px-4 py-2 text-primary-marineBlue peer-checked:border-primary-purplishBlue peer-checked:bg-neutral-magnolia lg:w-full lg:flex-col lg:items-start lg:gap-10 lg:py-4"
       >
         <img src={planIcon} alt={`${planType} icon`} className="h-8 w-8" />
         <div className="flex h-full flex-col justify-center">

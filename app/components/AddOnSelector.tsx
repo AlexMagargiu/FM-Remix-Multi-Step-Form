@@ -38,7 +38,7 @@ const AddOnSelector = ({
         className="flex w-full items-center justify-between gap-4"
       >
         <div>
-          <p className="font-ubuntu-medium">{addOnText}</p>
+          <p className="font-ubuntu-medium text-sm">{addOnText}</p>
           <p className="text-xs text-neutral-coolGray">{addOnDescription}</p>
         </div>
         <p className="text-sm text-primary-purplishBlue">{addOnPrice}</p>
