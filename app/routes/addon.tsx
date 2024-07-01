@@ -60,6 +60,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     createdAt: new Date(),
   });
 
+  session.set("id", id.toString());
+
   return redirect("/summary", {
     headers: {
       "Set-Cookie": await cookie.commitSession(session),
