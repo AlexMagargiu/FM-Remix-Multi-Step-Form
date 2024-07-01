@@ -3,7 +3,7 @@ import { json } from "@remix-run/node";
 import { Form, redirect, useActionData } from "@remix-run/react";
 import FormInput from "~/components/FormInput";
 import PageNavigation from "~/components/PageNavigation";
-import { connectToDatabase, ObjectId } from "~/utils/mongodb.server";
+import cookie from "~/utils/entry-server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,26 +14,24 @@ export const meta: MetaFunction = () => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const phoneNumber = formData.get("phone-number");
+  const name = String(formData.get("name"));
+  const email = String(formData.get("email"));
+  const phoneNumber = String(formData.get("phone-number"));
 
   if (!name || !email || !phoneNumber) {
     return json({ error: "Please fill in all fields" }, { status: 400 });
   }
 
-  const db = await connectToDatabase();
-  const id = new ObjectId();
+  const session = await cookie.getSession();
+  session.set("name", name);
+  session.set("email", email);
+  session.set("phoneNumber", phoneNumber);
 
-  await db.collection("formEntries").insertOne({
-    _id: id,
-    name,
-    email,
-    phoneNumber,
-    createdAt: new Date(),
+  return redirect("/plan", {
+    headers: {
+      "Set-Cookie": await cookie.commitSession(session),
+    },
   });
-
-  return redirect(`/plan/?id=${id.toHexString()}`);
 };
 
 export default function InfoPage() {

@@ -5,25 +5,47 @@ type AddOnSelectorProps = {
   addOnId: string;
   addOnText: string;
   addOnDescription: string;
-  addOnPrice: string;
+  addOnPriceMonthly: string;
+  addOnPriceYearly: string;
+  billingCycle: string;
+  onAddOnChange: (
+    addOnText: string,
+    addOnPrice: string,
+    isChecked: boolean,
+  ) => void;
 };
 
 const AddOnSelector = ({
   addOnId,
   addOnText,
   addOnDescription,
-  addOnPrice,
+  addOnPriceMonthly,
+  addOnPriceYearly,
+  billingCycle,
+  onAddOnChange,
 }: AddOnSelectorProps) => {
   const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newIsChecked = event.target.checked;
+    setIsChecked(newIsChecked);
+    const addOnPrice =
+      billingCycle === "monthly" ? addOnPriceMonthly : addOnPriceYearly;
+    onAddOnChange(addOnText, addOnPrice, newIsChecked);
+  };
+
   return (
     <div
-      className={`flex w-full cursor-pointer items-center gap-6 rounded-lg border border-neutral-lightGray px-4 py-2 text-primary-marineBlue ${isChecked ? "border-primary-purplishBlue bg-neutral-magnolia" : ""} `}
+      className={`flex w-full cursor-pointer items-center gap-6 rounded-lg border border-neutral-lightGray px-4 py-2 text-primary-marineBlue ${
+        isChecked ? "border-primary-purplishBlue bg-neutral-magnolia" : ""
+      }`}
     >
       <input
         type="checkbox"
         id={addOnId}
-        name="planType"
-        value={addOnPrice}
+        name="addOnText"
+        value={addOnText}
+        checked={isChecked}
         className="peer h-6 w-6 flex-shrink-0 appearance-none rounded-sm border border-neutral-lightGray checked:border-primary-purplishBlue checked:bg-primary-purplishBlue"
         style={{
           backgroundImage: `url(${checkmarkIcon})`,
@@ -31,7 +53,17 @@ const AddOnSelector = ({
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
-        onChange={() => setIsChecked(!isChecked)}
+        onChange={handleCheckboxChange}
+      />
+      <input
+        type="hidden"
+        name={isChecked ? "addOnPriceMonthly" : ""}
+        value={isChecked && billingCycle === "monthly" ? addOnPriceMonthly : ""}
+      />
+      <input
+        type="hidden"
+        name={isChecked ? "addOnPriceYearly" : ""}
+        value={isChecked && billingCycle === "yearly" ? addOnPriceYearly : ""}
       />
       <label
         htmlFor={addOnId}
@@ -41,7 +73,9 @@ const AddOnSelector = ({
           <p className="font-ubuntu-medium text-sm">{addOnText}</p>
           <p className="text-xs text-neutral-coolGray">{addOnDescription}</p>
         </div>
-        <p className="text-sm text-primary-purplishBlue">{addOnPrice}</p>
+        <p className="text-sm text-primary-purplishBlue">
+          {billingCycle === "monthly" ? addOnPriceMonthly : addOnPriceYearly}
+        </p>
       </label>
     </div>
   );

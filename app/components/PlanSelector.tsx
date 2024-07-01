@@ -4,6 +4,8 @@ type PlanSelectorProps = {
   selectedBillingCycle: string;
   planPriceMonthly: string;
   planPriceYearly: string;
+  isSelected: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const PlanSelector = ({
@@ -12,6 +14,8 @@ const PlanSelector = ({
   selectedBillingCycle,
   planPriceMonthly,
   planPriceYearly,
+  isSelected,
+  onChange,
 }: PlanSelectorProps) => {
   return (
     <div className="relative w-full flex-grow lg:w-auto">
@@ -21,6 +25,7 @@ const PlanSelector = ({
         name="planType"
         value={planType}
         className="peer hidden"
+        onChange={onChange}
       />
       <label
         htmlFor={planType}
@@ -43,6 +48,17 @@ const PlanSelector = ({
           )}
         </div>
       </label>
+      {isSelected && (
+        <input
+          type="hidden"
+          name="planPrice"
+          value={
+            selectedBillingCycle === "monthly"
+              ? planPriceMonthly
+              : planPriceYearly
+          }
+        />
+      )}
     </div>
   );
 };
