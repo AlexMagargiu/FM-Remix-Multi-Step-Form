@@ -20,7 +20,7 @@ const FormInput = ({
           {labelText}
         </label>
         {error && (
-          <p className="text-right text-xs text-red-500">
+          <p className="text-right text-xs text-primary-strawberryRed">
             This field is required
           </p>
         )}
@@ -31,8 +31,8 @@ const FormInput = ({
         type={inputType}
         placeholder={placeholder}
         className={`rounded-md border ${
-          error ? "border-red-500" : "border-neutral-lightGray"
-        } p-2 font-ubuntu-medium outline-none focus:border-primary-purplishBlue`}
+          error ? "border-primary-strawberryRed" : "border-neutral-lightGray"
+        } px-4 py-2 font-ubuntu-medium outline-none focus:border-primary-purplishBlue`}
       />
     </div>
   );

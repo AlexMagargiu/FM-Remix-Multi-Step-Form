@@ -1,18 +1,30 @@
 import { useNavigate } from "@remix-run/react";
 
-const PageNavigation = () => {
+type PageNavigationProps = {
+  indexPage: boolean;
+  summaryPage: boolean;
+};
+
+const PageNavigation = ({ indexPage, summaryPage }: PageNavigationProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="my-4 flex w-full max-w-2xl items-center justify-between font-ubuntu-medium text-sm">
-      <button className="text-neutral-coolGray" onClick={() => navigate(-1)}>
-        Go Back
-      </button>
+    <div
+      className={`${indexPage ? "justify-end" : "justify-between"} my-4 flex w-full items-center font-ubuntu-medium text-sm`}
+    >
+      {!indexPage && (
+        <button
+          className="text-neutral-coolGray hover:text-primary-marineBlue"
+          onClick={() => navigate(-1)}
+        >
+          Go Back
+        </button>
+      )}
       <button
         type="submit"
-        className="rounded-md bg-primary-marineBlue px-4 py-2 text-primary-lightBlue"
+        className={`${summaryPage ? "bg-primary-purplishBlue hover:opacity-60" : "bg-primary-marineBlue"} self-end rounded-md px-6 py-2 text-neutral-magnolia`}
       >
-        Next Step
+        {summaryPage ? "Confirm" : "Next Step"}
       </button>
     </div>
   );

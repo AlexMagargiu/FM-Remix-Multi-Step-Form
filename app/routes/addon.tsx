@@ -83,8 +83,6 @@ export default function AddOnPage() {
     isChecked: boolean,
   ) => {
     if (isChecked) {
-      console.log(addOnText);
-      console.log(addOnPrice);
       return { addOnText, addOnPrice };
     } else {
       return { addOnText: "", addOnPrice: "" };
@@ -94,16 +92,16 @@ export default function AddOnPage() {
   const { billingCycle } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex h-full w-[90%] flex-col items-center justify-between gap-12 text-primary-marineBlue lg:h-full lg:w-8/12 lg:items-start">
+    <div className="flex h-full w-[90%] flex-col items-center justify-between gap-12 text-primary-marineBlue lg:h-full lg:w-9/12 lg:items-start">
       <Form
-        className="flex w-full flex-col gap-4 rounded-lg bg-neutral-alabaster px-4 py-6 shadow-xl lg:flex lg:h-full lg:w-full lg:flex-col lg:items-start lg:justify-between lg:bg-white lg:px-0 lg:py-4 lg:shadow-none"
+        className="flex w-full flex-col gap-4 rounded-lg bg-neutral-white shadow-xl lg:flex lg:h-full lg:w-full lg:flex-col lg:items-start lg:justify-between lg:bg-white lg:shadow-none"
         method="post"
       >
-        <div className="flex flex-col lg:h-full lg:w-full lg:justify-between">
-          <div className="flex flex-col gap-4 lg:h-full lg:w-full">
-            <div className="lg:mt-8">
+        <div className="flex flex-col px-4 py-6 lg:h-full lg:w-full lg:justify-between">
+          <div className="flex flex-col gap-3 lg:h-full lg:w-full lg:gap-6">
+            <div className="flex flex-col gap-2 lg:mt-4 lg:gap-0">
               <h1 className="font-ubuntu-bold text-2xl">Pick add-ons</h1>
-              <p className="max-w-64 text-sm text-neutral-coolGray lg:max-w-full">
+              <p className="min-w-64 max-w-full text-sm text-neutral-coolGray">
                 Add-ons help enhance your gaming experience.
               </p>
             </div>
@@ -137,14 +135,11 @@ export default function AddOnPage() {
               />
             </div>
           </div>
-          <div className="hidden lg:flex">
-            <PageNavigation />
-          </div>
+        </div>
+        <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
+          <PageNavigation indexPage={false} summaryPage={false} />
         </div>
       </Form>
-      <div className="flex w-full items-center justify-center lg:hidden">
-        <PageNavigation />
-      </div>
     </div>
   );
 }

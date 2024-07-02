@@ -22,7 +22,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="relative z-10 h-1/4 bg-mobile bg-cover bg-no-repeat"></div>
           <div className="relative z-10 h-3/5 bg-neutral-magnolia bg-cover bg-no-repeat lg:hidden"></div>
           <main className="absolute top-8 z-20 flex h-[calc(100vh-2rem)] w-full flex-col items-center gap-8 lg:top-0 lg:h-full lg:flex-row lg:items-start lg:gap-0 lg:p-3">
-            <div className="flex items-center gap-6 bg-cover bg-no-repeat lg:relative lg:flex lg:h-full lg:w-2/5 lg:flex-col lg:items-start lg:rounded-lg lg:bg-desktop lg:p-8">
+            <div className="flex items-center gap-4 bg-cover bg-no-repeat lg:relative lg:flex lg:h-full lg:w-2/5 lg:flex-col lg:items-start lg:gap-6 lg:rounded-lg lg:bg-desktop lg:p-8">
               <NavStep stepNumber={1} stepDescription="YOUR INFO" />
               <NavStep stepNumber={2} stepDescription="SELECT PLAN" />
               <NavStep stepNumber={3} stepDescription="ADD-ONS" />

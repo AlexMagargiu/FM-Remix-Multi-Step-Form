@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, redirect } from "@remix-run/react";
+import { Form, json, redirect, useActionData } from "@remix-run/react";
 import PageNavigation from "~/components/PageNavigation";
 import PlanSelector from "~/components/PlanSelector";
 import arcadeIcon from "~/assets/images/icon-arcade.svg";
@@ -21,6 +21,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const planPrice = formData.get("planPrice");
   const billingCycle = formData.get("billingCycle");
 
+  if (!planType) {
+    return json({ error: "Please select a plan" }, { status: 400 });
+  }
+
   const session = await cookie.getSession(request.headers.get("Cookie"));
   session.set("planType", planType);
   session.set("planPrice", planPrice);
@@ -34,6 +38,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function PlanSelectorPage() {
+  const formResponse = useActionData<typeof action>();
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
@@ -49,16 +54,16 @@ export default function PlanSelectorPage() {
   };
 
   return (
-    <div className="flex h-full w-[90%] flex-col items-center justify-between gap-12 text-primary-marineBlue lg:h-full lg:w-8/12 lg:items-start">
+    <div className="flex h-full w-[90%] flex-col items-center justify-between gap-12 text-primary-marineBlue lg:h-full lg:w-9/12 lg:items-start">
       <Form
-        className="flex w-full flex-col gap-4 rounded-lg bg-neutral-alabaster px-4 py-6 shadow-xl lg:flex lg:h-full lg:w-full lg:flex-col lg:items-start lg:justify-between lg:bg-white lg:px-0 lg:py-4 lg:shadow-none"
+        className="flex w-full flex-col gap-4 rounded-lg bg-neutral-white shadow-xl lg:flex lg:h-full lg:w-full lg:flex-col lg:items-start lg:justify-between lg:bg-white lg:shadow-none"
         method="post"
       >
-        <div className="flex flex-col lg:h-full lg:w-full lg:justify-between">
-          <div className="flex flex-col gap-4 lg:h-full lg:w-full">
-            <div className="lg:mt-8">
+        <div className="flex flex-col px-4 py-6 lg:h-full lg:w-full lg:justify-between">
+          <div className="flex flex-col gap-3 lg:h-full lg:w-full lg:gap-6">
+            <div className="flex flex-col gap-2 lg:mt-4 lg:gap-0">
               <h1 className="font-ubuntu-bold text-2xl">Select your plan</h1>
-              <p className="max-w-60 text-sm text-neutral-coolGray lg:max-w-full">
+              <p className="min-w-64 max-w-full text-sm text-neutral-coolGray">
                 You have the option of monthly or yearly billing.
               </p>
             </div>
@@ -70,6 +75,7 @@ export default function PlanSelectorPage() {
                 planPriceMonthly="$9/mo"
                 planPriceYearly="$90/yr"
                 isSelected={selectedPlan === "Arcade"}
+                error={formResponse?.error}
                 onChange={handlePlanChange}
               />
               <PlanSelector
@@ -79,6 +85,7 @@ export default function PlanSelectorPage() {
                 planPriceMonthly="$12/mo"
                 planPriceYearly="$120/yr"
                 isSelected={selectedPlan === "Advanced"}
+                error={formResponse?.error}
                 onChange={handlePlanChange}
               />
               <PlanSelector
@@ -88,10 +95,16 @@ export default function PlanSelectorPage() {
                 planPriceMonthly="$15/mo"
                 planPriceYearly="$150/yr"
                 isSelected={selectedPlan === "Pro"}
+                error={formResponse?.error}
                 onChange={handlePlanChange}
               />
             </div>
-            <div className="flex w-full items-center justify-center gap-8 rounded-md bg-neutral-magnolia p-2 font-ubuntu-medium">
+            {formResponse?.error && (
+              <p className="text-md text-primary-strawberryRed">
+                Please select a plan
+              </p>
+            )}
+            <div className="flex w-full items-center justify-center gap-8 rounded-md bg-neutral-magnolia p-2 font-ubuntu-medium text-sm">
               <p
                 className={`${billingCycle === "monthly" ? "text-primary-marineBlue" : "text-neutral-coolGray"}`}
               >
@@ -115,15 +128,12 @@ export default function PlanSelectorPage() {
               </p>
             </div>
           </div>
-          <div className="hidden lg:flex">
-            <PageNavigation />
-          </div>
         </div>
         <input type="hidden" name="billingCycle" value={billingCycle} />
+        <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
+          <PageNavigation indexPage={false} summaryPage={false} />
+        </div>
       </Form>
-      <div className="flex w-full items-center justify-center lg:hidden">
-        <PageNavigation />
-      </div>
     </div>
   );
 }
