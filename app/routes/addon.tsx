@@ -2,7 +2,6 @@ import { Form, redirect, useLoaderData } from "@remix-run/react";
 import PageNavigation from "~/components/PageNavigation";
 import { useState } from "react";
 import cookie from "~/utils/entry-server";
-import { connectToDatabase, ObjectId } from "~/utils/mongodb.server";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -19,11 +18,6 @@ export const meta: MetaFunction = () => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const session = await cookie.getSession(request.headers.get("Cookie"));
-  const name = session.get("name");
-  const email = session.get("email");
-  const phoneNumber = session.get("phoneNumber");
-  const planType = session.get("planType");
-  const planPrice = session.get("planPrice");
   const billingCycle = session.get("billingCycle");
 
   const formData = await request.formData();
@@ -43,24 +37,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   session.set("selectedAddOns", selectedAddOns);
   session.set("selectedAddOnsPrice", selectedAddOnsPrice);
-
-  const db = await connectToDatabase();
-  const id = new ObjectId();
-
-  await db.collection("formEntries").insertOne({
-    _id: id,
-    name,
-    email,
-    phoneNumber,
-    planType,
-    planPrice,
-    billingCycle,
-    selectedAddOns,
-    selectedAddOnsPrice,
-    createdAt: new Date(),
-  });
-
-  session.set("id", id.toString());
 
   return redirect("/summary", {
     headers: {
@@ -137,7 +113,7 @@ export default function AddOnPage() {
           </div>
         </div>
         <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
-          <PageNavigation indexPage={false} summaryPage={false} />
+          <PageNavigation />
         </div>
       </Form>
     </div>

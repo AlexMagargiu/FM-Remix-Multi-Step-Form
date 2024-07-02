@@ -75,7 +75,7 @@ export default function InfoPage() {
           </div>
         </div>
         <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
-          <PageNavigation indexPage={true} summaryPage={false} />
+          <PageNavigation indexPage={true} />
         </div>
       </Form>
     </div>

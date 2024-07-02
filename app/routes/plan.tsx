@@ -131,7 +131,7 @@ export default function PlanSelectorPage() {
         </div>
         <input type="hidden" name="billingCycle" value={billingCycle} />
         <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
-          <PageNavigation indexPage={false} summaryPage={false} />
+          <PageNavigation />
         </div>
       </Form>
     </div>

@@ -1,8 +1,14 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, json, useLoaderData } from "@remix-run/react";
-import { connectToDatabase, ObjectId } from "~/utils/mongodb.server";
+import {
+  Form,
+  json,
+  useLoaderData,
+  redirect,
+  useSubmit,
+} from "@remix-run/react";
 import cookie from "~/utils/entry-server";
 import PageNavigation from "~/components/PageNavigation";
+import { connectToDatabase, ObjectId } from "~/utils/mongodb.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,26 +19,63 @@ export const meta: MetaFunction = () => {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await cookie.getSession(request.headers.get("Cookie"));
-  const id = session.get("id");
+  const data = {
+    name: session.get("name"),
+    email: session.get("email"),
+    phoneNumber: session.get("phoneNumber"),
+    planType: session.get("planType"),
+    planPrice: session.get("planPrice"),
+    billingCycle: session.get("billingCycle"),
+    selectedAddOns: session.get("selectedAddOns") || [],
+    selectedAddOnsPrice: session.get("selectedAddOnsPrice") || [],
+  };
 
-  if (!id) {
-    throw new Error("ID not found in session");
+  return json(data);
+};
+
+export const action = async ({ request }: LoaderFunctionArgs) => {
+  const session = await cookie.getSession(request.headers.get("Cookie"));
+  const formData = await request.formData();
+  const action = formData.get("action");
+
+  if (action === "change") {
+    return redirect("/plan", {
+      headers: {
+        "Set-Cookie": await cookie.commitSession(session),
+      },
+    });
   }
+
+  const id = session.get("id") || new ObjectId().toString();
+
+  const data = {
+    name: session.get("name"),
+    email: session.get("email"),
+    phoneNumber: session.get("phoneNumber"),
+    planType: session.get("planType"),
+    planPrice: session.get("planPrice"),
+    billingCycle: session.get("billingCycle"),
+    selectedAddOns: session.get("selectedAddOns"),
+    selectedAddOnsPrice: session.get("selectedAddOnsPrice"),
+    createdAt: new Date(),
+  };
 
   const db = await connectToDatabase();
-  const document = await db
+  await db
     .collection("formEntries")
-    .findOne({ _id: new ObjectId(id) });
+    .updateOne({ _id: new ObjectId(id) }, { $set: data }, { upsert: true });
 
-  if (!document) {
-    throw new Error("Document not found");
-  }
-
-  return json(document);
+  session.set("id", id);
+  return redirect("/confirmation", {
+    headers: {
+      "Set-Cookie": await cookie.commitSession(session),
+    },
+  });
 };
 
 export default function Summary() {
   const data = useLoaderData<typeof loader>();
+  const submit = useSubmit();
 
   const cleanPrice = (price: string) => {
     return parseFloat(price.replace(/[^\d.]/g, ""));
@@ -50,6 +93,27 @@ export default function Summary() {
   };
 
   const totalCost = calculateTotalCost();
+
+  const handleChange = () => {
+    const formData = new FormData();
+    formData.append("action", "change");
+    submit(formData, { method: "post" });
+  };
+
+  const handleConfirm = () => {
+    const formData = new FormData();
+    formData.append("action", "confirm");
+    Object.entries(data).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          formData.append(`${key}[${index}]`, item);
+        });
+      } else {
+        formData.append(key, value as string);
+      }
+    });
+    submit(formData, { method: "post" });
+  };
 
   return (
     <div className="flex h-full w-[90%] flex-col items-center justify-between gap-12 text-primary-marineBlue lg:h-full lg:w-9/12 lg:items-start">
@@ -71,7 +135,11 @@ export default function Summary() {
                   <p className="font-ubuntu-bold">
                     {data.planType} ({data.billingCycle})
                   </p>
-                  <button className="mb-4 font-ubuntu-medium text-neutral-coolGray underline hover:text-primary-purplishBlue">
+                  <button
+                    type="button"
+                    className="mb-4 font-ubuntu-medium text-neutral-coolGray underline hover:text-primary-purplishBlue"
+                    onClick={handleChange}
+                  >
                     Change
                   </button>
                 </div>
@@ -105,7 +173,7 @@ export default function Summary() {
           </div>
         </div>
         <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
-          <PageNavigation indexPage={false} summaryPage={true} />
+          <PageNavigation summaryPage={true} onConfirm={handleConfirm} />
         </div>
       </Form>
     </div>
