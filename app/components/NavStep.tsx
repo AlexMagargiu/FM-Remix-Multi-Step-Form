@@ -1,9 +1,14 @@
 type NavStepProps = {
   stepNumber: number;
   stepDescription: string;
+  currentStepNumber: number;
 };
 
-const NavStep = ({ stepNumber, stepDescription }: NavStepProps) => {
+const NavStep = ({
+  stepNumber,
+  stepDescription,
+  currentStepNumber,
+}: NavStepProps) => {
   return (
     <div className="flex flex-col items-center gap-2 lg:flex-row lg:gap-4">
       <div className="relative h-8 w-8 font-ubuntu-bold text-sm text-neutral-magnolia">
@@ -13,7 +18,7 @@ const NavStep = ({ stepNumber, stepDescription }: NavStepProps) => {
           id={`form-step-${stepNumber}`}
           name="form-step"
           className="peer absolute opacity-0"
-          defaultChecked={stepNumber === 1}
+          defaultChecked={stepNumber === currentStepNumber}
           disabled={true}
         />
         <label

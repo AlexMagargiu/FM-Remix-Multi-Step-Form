@@ -9,6 +9,7 @@ import {
 import cookie from "~/utils/entry-server";
 import PageNavigation from "~/components/PageNavigation";
 import { connectToDatabase, ObjectId } from "~/utils/mongodb.server";
+import thankYouIcon from "~/assets/images/icon-thank-you.svg";
 
 export const meta: MetaFunction = () => {
   return [
@@ -18,6 +19,8 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const isSubmitted = url.searchParams.get("submitted") === "true";
   const session = await cookie.getSession(request.headers.get("Cookie"));
   const data = {
     name: session.get("name"),
@@ -28,6 +31,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     billingCycle: session.get("billingCycle"),
     selectedAddOns: session.get("selectedAddOns") || [],
     selectedAddOnsPrice: session.get("selectedAddOnsPrice") || [],
+    isSubmitted,
   };
 
   return json(data);
@@ -66,7 +70,7 @@ export const action = async ({ request }: LoaderFunctionArgs) => {
     .updateOne({ _id: new ObjectId(id) }, { $set: data }, { upsert: true });
 
   session.set("id", id);
-  return redirect("/confirmation", {
+  return redirect("/summary?submitted=true", {
     headers: {
       "Set-Cookie": await cookie.commitSession(session),
     },
@@ -123,58 +127,78 @@ export default function Summary() {
       >
         <div className="flex flex-col px-4 py-6 lg:h-full lg:w-full lg:justify-between">
           <div className="flex flex-col gap-3 lg:h-full lg:w-full lg:gap-6">
-            <div className="flex flex-col gap-2 lg:mt-4 lg:gap-0">
-              <h1 className="font-ubuntu-bold text-2xl">Finishing up</h1>
-              <p className="min-w-64 max-w-full text-sm text-neutral-coolGray">
-                Double-check everything looks OK before confirming.
-              </p>
-            </div>
-            <div className="flex flex-col rounded-lg bg-neutral-alabaster p-4">
-              <div className="flex items-center justify-between border-b border-neutral-lightGray">
-                <div>
-                  <p className="font-ubuntu-bold">
-                    {data.planType} ({data.billingCycle})
-                  </p>
-                  <button
-                    type="button"
-                    className="mb-4 font-ubuntu-medium text-neutral-coolGray underline hover:text-primary-purplishBlue"
-                    onClick={handleChange}
-                  >
-                    Change
-                  </button>
-                </div>
-                <p className="font-ubuntu-bold lg:text-sm">{data.planPrice}</p>
+            {data.isSubmitted ? (
+              <div className="flex h-full flex-col items-center justify-center gap-4 px-2 py-12">
+                <img src={thankYouIcon} className="h-12 w-12 lg:h-16 lg:w-16" />
+                <h1 className="font-ubuntu-bold text-xl lg:mt-2">Thank you!</h1>
+                <p className="text-center text-neutral-coolGray lg:text-sm">
+                  Thanks for confirming your subscription! We hope you have fun
+                  using our platform. If you ever need support, please feel free
+                  to email us at support@loremgaming.com.
+                </p>
               </div>
-              {data.selectedAddOns.length > 0 &&
-                data.selectedAddOns.map((addOn: string, index: number) => (
-                  <div
-                    key={index}
-                    className="mt-4 flex items-center justify-between"
-                  >
-                    <p className="font-ubuntu-medium text-neutral-coolGray lg:text-sm">
-                      {addOn}
-                    </p>
-                    <p className="font-ubuntu-medium lg:text-sm">
-                      {data.selectedAddOnsPrice[index]}
+            ) : (
+              <>
+                <div className="flex flex-col gap-2 lg:mt-4 lg:gap-0">
+                  <h1 className="font-ubuntu-bold text-2xl">Finishing up</h1>
+                  <p className="min-w-64 max-w-full text-sm text-neutral-coolGray">
+                    Double-check everything looks OK before confirming.
+                  </p>
+                </div>
+                <div className="flex flex-col rounded-lg bg-neutral-alabaster p-4">
+                  <div className="flex items-center justify-between border-b border-neutral-lightGray">
+                    <div>
+                      <p className="font-ubuntu-bold">
+                        {data.planType} ({data.billingCycle})
+                      </p>
+                      <button
+                        type="button"
+                        className="mb-4 font-ubuntu-medium text-neutral-coolGray underline hover:text-primary-purplishBlue"
+                        onClick={handleChange}
+                      >
+                        Change
+                      </button>
+                    </div>
+                    <p className="font-ubuntu-bold lg:text-sm">
+                      {data.planPrice}
                     </p>
                   </div>
-                ))}
-            </div>
-            <div className="flex items-center justify-between px-6 pt-4">
-              <p className="text-neutral-coolGray lg:text-sm">
-                Total{" "}
-                {data.billingCycle === "monthly" ? "(per month)" : "(per year)"}
-              </p>
-              <p className="font-ubuntu-bold text-primary-purplishBlue">
-                +${totalCost}
-                {data.billingCycle === "monthly" ? "/mo" : "/yr"}
-              </p>
-            </div>
+                  {data.selectedAddOns.length > 0 &&
+                    data.selectedAddOns.map((addOn: string, index: number) => (
+                      <div
+                        key={index}
+                        className="mt-4 flex items-center justify-between"
+                      >
+                        <p className="font-ubuntu-medium text-neutral-coolGray lg:text-sm">
+                          {addOn}
+                        </p>
+                        <p className="font-ubuntu-medium lg:text-sm">
+                          {data.selectedAddOnsPrice[index]}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+                <div className="flex items-center justify-between px-6 pt-4">
+                  <p className="text-neutral-coolGray lg:text-sm">
+                    Total{" "}
+                    {data.billingCycle === "monthly"
+                      ? "(per month)"
+                      : "(per year)"}
+                  </p>
+                  <p className="font-ubuntu-bold text-primary-purplishBlue">
+                    +${totalCost}
+                    {data.billingCycle === "monthly" ? "/mo" : "/yr"}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
-        <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
-          <PageNavigation summaryPage={true} onConfirm={handleConfirm} />
-        </div>
+        {!data.isSubmitted && (
+          <div className="absolute bottom-0 w-[90%] lg:relative lg:w-full lg:px-4">
+            <PageNavigation summaryPage={true} onConfirm={handleConfirm} />
+          </div>
+        )}
       </Form>
     </div>
   );

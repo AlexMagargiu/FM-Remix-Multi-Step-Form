@@ -13,15 +13,6 @@ const PageNavigation = ({
 }: PageNavigationProps) => {
   const navigate = useNavigate();
 
-  /* const handleButtonClick = () => {
-    if (summaryPage && onConfirm) {
-      onConfirm();
-    } else {
-      const form = document.querySelector("form");
-      if (form) form.submit();
-    }
-  }; */
-
   return (
     <div
       className={`${indexPage ? "justify-end" : "justify-between"} my-4 flex w-full items-center font-ubuntu-medium text-sm`}

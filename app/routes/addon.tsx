@@ -1,6 +1,5 @@
 import { Form, redirect, useLoaderData } from "@remix-run/react";
 import PageNavigation from "~/components/PageNavigation";
-import { useState } from "react";
 import cookie from "~/utils/entry-server";
 import {
   ActionFunctionArgs,
