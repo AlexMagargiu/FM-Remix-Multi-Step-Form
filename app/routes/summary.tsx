@@ -9,7 +9,7 @@ import {
 import cookie from "~/utils/entry-server";
 import PageNavigation from "~/components/PageNavigation";
 import { connectToDatabase, ObjectId } from "~/utils/mongodb.server";
-import thankYouIcon from "~/assets/images/icon-thank-you.svg";
+import thankYouIcon from "/images/icon-thank-you.svg";
 
 export const meta: MetaFunction = () => {
   return [

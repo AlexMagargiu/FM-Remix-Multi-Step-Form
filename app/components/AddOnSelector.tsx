@@ -1,5 +1,5 @@
 import { useState } from "react";
-import checkmarkIcon from "~/assets/images/icon-checkmark.svg";
+import checkmarkIcon from "/images/icon-checkmark.svg";
 
 type AddOnSelectorProps = {
   addOnId: string;

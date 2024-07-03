@@ -2,9 +2,9 @@ import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Form, json, redirect, useActionData } from "@remix-run/react";
 import PageNavigation from "~/components/PageNavigation";
 import PlanSelector from "~/components/PlanSelector";
-import arcadeIcon from "~/assets/images/icon-arcade.svg";
-import advancedIcon from "~/assets/images/icon-advanced.svg";
-import proIcon from "~/assets/images/icon-pro.svg";
+import arcadeIcon from "/images/icon-arcade.svg";
+import advancedIcon from "/images/icon-advanced.svg";
+import proIcon from "/images/icon-pro.svg";
 import { useState } from "react";
 import cookie from "~/utils/entry-server";
 
