@@ -4,6 +4,7 @@ import { Form, redirect, useActionData } from "@remix-run/react";
 import FormInput from "~/components/FormInput";
 import PageNavigation from "~/components/PageNavigation";
 import cookie from "~/utils/entry-server";
+import { z } from "zod";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,14 +13,30 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+const formSchema = z.object({
+  name: z.string().min(4, { message: "Must be at least 4 characters long" }),
+  email: z.string().email({ message: "Must be a valid email address" }),
+  phoneNumber: z
+    .number({ message: "Must be a number" })
+    .min(8, { message: "Must be at least 8 characters long" }),
+});
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const name = String(formData.get("name"));
   const email = String(formData.get("email"));
-  const phoneNumber = String(formData.get("phone-number"));
+  const phoneNumber = Number(formData.get("phone-number"));
 
-  if (!name || !email || !phoneNumber) {
-    return json({ error: "Please fill in all fields" }, { status: 400 });
+  const validationResult = formSchema.safeParse({ name, email, phoneNumber });
+
+  if (!validationResult.success) {
+    return json(
+      {
+        error: "Please fill in all fields correctly",
+        details: validationResult.error.flatten().fieldErrors,
+      },
+      { status: 400 },
+    );
   }
 
   const session = await cookie.getSession();
@@ -56,21 +73,21 @@ export default function InfoPage() {
               id="name"
               inputType="text"
               placeholder="e.g. Stephen King"
-              error={formResponse?.error}
+              error={formResponse?.details?.name?.[0]}
             />
             <FormInput
               labelText="Email Address"
               id="email"
               inputType="email"
               placeholder="e.g. stephenking@lorem.com"
-              error={formResponse?.error}
+              error={formResponse?.details?.email?.[0]}
             />
             <FormInput
               labelText="Phone Number"
               id="phone-number"
               inputType="tel"
               placeholder="e.g. +1 234 567 890"
-              error={formResponse?.error}
+              error={formResponse?.details?.phoneNumber?.[0]}
             />
           </div>
         </div>

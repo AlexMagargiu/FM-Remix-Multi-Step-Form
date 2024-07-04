@@ -3,7 +3,7 @@ type FormInputProps = {
   id: string;
   inputType: string;
   placeholder: string;
-  error: any;
+  error?: string;
 };
 
 const FormInput = ({
@@ -21,7 +21,7 @@ const FormInput = ({
         </label>
         {error && (
           <p className="text-right text-xs text-primary-strawberryRed">
-            This field is required
+            {error}
           </p>
         )}
       </div>
